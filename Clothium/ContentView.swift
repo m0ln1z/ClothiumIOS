@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  Clothium
-//
-//  Created by artur on 24.09.2025.
-//
-
 import SwiftUI
 
 struct ContentView: View {
