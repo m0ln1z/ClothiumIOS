@@ -19,7 +19,7 @@ struct OnboardingView: View {
                     .foregroundStyle(BrandTheme.textPrimary)
                     .padding(.top, 8)
 
-                Text("Выберите один вариант или больше и мы подберем капсулу рекомендаций")
+                Text("Выберите один вариант или больше")
                     .foregroundStyle(BrandTheme.textSecondary)
                     .font(.subheadline)
 
@@ -57,7 +57,7 @@ struct OnboardingView: View {
             }
         }
         .task { await viewModel.load() }
-        .onChange(of: viewModel.isCompleted) { _, done in
+        .onChange(of: viewModel.isCompleted) { done in
             if done { onFinished() }
         }
     }
@@ -105,5 +105,3 @@ struct OnboardingView: View {
 #Preview {
     OnboardingView(user: .init(id: "1", email: "demo@clothium.app")) {}
 }
-
-
