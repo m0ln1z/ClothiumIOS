@@ -6,7 +6,7 @@ struct ClothiumApp: App {
     @State private var authenticatedUser: AuthUser?
     @State private var needsOnboarding: Bool = false
 
-    enum Route { case welcome, auth, onboarding, home }
+    enum Route { case welcome, auth, onboardingIntro, onboarding, home }
 
     var body: some Scene {
         WindowGroup {
@@ -18,35 +18,41 @@ struct ClothiumApp: App {
 
     @ViewBuilder
     private func contentView() -> some View {
-            Group {
-                switch route {
-                case .welcome:
-                    WelcomeView { route = .auth }
-                case .auth:
-                    AuthView { user in
-                        authenticatedUser = user
-                        Task {
-                            let completed = (try? await OnboardingService.shared.isOnboardingCompleted(userId: user.id)) ?? false
-                            needsOnboarding = !completed
-                            route = needsOnboarding ? .onboarding : .home
-                        }
-                    }
-                case .onboarding:
-                    if let user = authenticatedUser {
-                        OnboardingView(user: user) {
-                            needsOnboarding = false
-                            route = .home
-                        }
-                    }
-                case .home:
-                    if let user = authenticatedUser {
-                        HomeView(user: user)
-                    } else {
-                        WelcomeView { route = .auth }
+        Group {
+            switch route {
+            case .welcome:
+                WelcomeView { route = .auth }
+
+            case .auth:
+                AuthView { user in
+                    authenticatedUser = user
+                    Task {
+                        let completed = (try? await OnboardingService.shared.isOnboardingCompleted(userId: user.id)) ?? false
+                        needsOnboarding = !completed
+                        route = needsOnboarding ? .onboardingIntro : .home
                     }
                 }
+
+            case .onboardingIntro:
+                OnboardingIntroView {
+                    route = .onboarding
+                }
+
+            case .onboarding:
+                if let user = authenticatedUser {
+                    OnboardingView(user: user) {
+                        needsOnboarding = false
+                        route = .home
+                    }
+                }
+
+            case .home:
+                if let user = authenticatedUser {
+                    HomeView(user: user)
+                } else {
+                    WelcomeView { route = .auth }
+                }
             }
+        }
     }
 }
-
-
